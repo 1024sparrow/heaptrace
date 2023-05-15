@@ -1,0 +1,27 @@
+#!/bin/bash
+
+function ERROR {
+	echo "Error: $1"
+	exit 1
+}
+
+if [ ! $(id -u) -eq 0 ]
+then
+	echo Run this under ROOT only!
+	exit 1
+fi
+
+
+source /etc/os-release
+if [ "$ID" == alpine ]
+then
+	apk add libunwind-dev libunwind libunwind-doc boost1.82 boost1.82-dev || ERROR 'Dependency packages not found'
+else
+	ERROR 'Your operating system not supported'
+fi
+
+if ! [ -d build ]
+then
+	mkdir build || ERROR 'Не удалось создать сборочную директорию'
+fi
+cd build && cmake -DCMAKE_BUILD_TYPE=Release .. || ERROR 'Не удалось подготовить Makefile'
